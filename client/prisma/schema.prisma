@@ -1,0 +1,28 @@
+// prisma/schema.prisma
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL") 
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Define User
+model User {
+  id       Int    @id @default(autoincrement())
+  email    String @unique @db.VarChar(20) 
+  password String @db.VarChar(70) 
+  nickname String @unique @db.VarChar(10) 
+  createdAt DateTime @default(now())
+  sessions  Session[]
+}
+
+// Define Session
+model Session {
+  id           String   @id @default(cuid()) 
+  sessionToken String   @unique              
+  userId       Int                               
+  user         User     @relation(fields: [userId], references: [id])
+  expires      DateTime                          
+}
