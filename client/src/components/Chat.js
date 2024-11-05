@@ -19,7 +19,11 @@ const chunkText = (text, chunkSize) => {
   return text.match(regex) || [];
 };
 
-const Message = ({ content, own, user }) => {
+const Message = ({ content, own, user, type }) => {
+  if (type === "server") {
+    return <p className="text-center text-sm text-gray-500 my-2">{content}</p>;
+  }
+
   const chunks = chunkText(content, 20);
 
   return (

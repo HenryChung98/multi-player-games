@@ -8,7 +8,7 @@ import { useUser } from "@/app/context/UserContext";
 // socket
 import { io } from "socket.io-client";
 
-// components 
+// components
 import Chat from "@/components/Chat";
 import Inputs from "@/components/Inputs";
 
@@ -49,15 +49,17 @@ export default function DrawingGameRoom() {
   }
   return (
     <>
-      <Chat chat={chat} user={user.nickname} />
-      <Inputs
-        setChat={setChat}
-        user={user.nickname}
-        socket={socket}
-        roomName={room}
-      />
       {user ? (
         <>
+          <canvas className="rounded border border-blue-500 w-[500px]"></canvas>
+          <Chat chat={chat} user={user.nickname} />
+          <Inputs
+            setChat={setChat}
+            user={user.nickname}
+            socket={socket}
+            roomName={room}
+          />
+
           <div>{user.nickname}</div>
         </>
       ) : (

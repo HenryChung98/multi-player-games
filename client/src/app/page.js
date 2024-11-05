@@ -17,33 +17,53 @@ export default function Home() {
 
   // formatter
   const dateFormatter = (date) => {
-
-    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayNames = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
 
     const createdAt = new Date(date);
-    const createdYear = createdAt.getFullYear(); 
-    const createdMonth = createdAt.getMonth() + 1; 
+    const createdYear = createdAt.getFullYear();
+    const createdMonth = createdAt.getMonth() + 1;
     const createdDate = createdAt.getDate();
-    const createdDayIndex = createdAt.getDay(); 
+    const createdDayIndex = createdAt.getDay();
 
-    return `${dayNames[createdDayIndex]}, ${monthNames[createdMonth - 1]} ${createdDate}, ${createdYear}`;
-  }
- 
+    return `${dayNames[createdDayIndex]}, ${
+      monthNames[createdMonth - 1]
+    } ${createdDate}, ${createdYear}`;
+  };
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <h1 className="text-2xl">Home Page</h1>
       <main className="p-3 border border-red-200 flex flex-col gap-8 items-center sm:items-start">
         {user ? (
           <>
-            <div className="user-info border border-red-200 p-3">Name: {user.nickname}
+            <div className="user-info border border-red-200 p-3">
+              Name: {user.nickname}
               <p>{user.email}</p>
               <p>Signed up on {dateFormatter(user.createdAt)}</p>
             </div>
-           
+
             <LogoutForm />
             <Link href="/dashboard">Go to Dashboard</Link>
             <Link href="/chatroom">Start Chat</Link>
