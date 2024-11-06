@@ -1,67 +1,92 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-// to get user data
 import { useUser } from "@/app/context/UserContext";
-
-// socket
 import { io } from "socket.io-client";
-
-// components
 import Chat from "@/components/Chat";
 import Inputs from "@/components/Inputs";
+import UserList from "@/components/UserList";
 
-// const socket = io("http://localhost:3001");
 const socket = io("http://192.168.11.171:3001");
 
-export default function DrawingGameRoom() {
-  // to get user data
+export default function DrawingRoom() {
   const { user, loading } = useUser();
-  // set message
   const [chat, setChat] = useState([]);
-  // set room
-  const [room, setRoom] = useState("drawingRoom");
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [displayOnlineUserBar, setDisplayOnlineUserBar] = useState(false);
+  const room = "drawingRoom";
 
-  // handle to join room
-  const joinRoom = (roomName) => {
-    socket.emit("join_room", roomName);
-    setRoom(roomName);
-  };
   useEffect(() => {
     if (user) {
-      joinRoom("drawingRoom");
+      // join room
+      socket.emit("join_room", room);
+      socket.emit("user_joined", { user: user.nickname, room });
+
+      // update user list
+      socket.on("update_user_list", (users) => {
+        setOnlineUsers(users);
+      });
+
+      // handle recieved message
+      const handleMessage = (msg) => {
+        setChat((prev) => [...prev, msg]);
+      };
+
+      socket.on("recieve_message", handleMessage);
+      return () => {
+        // leave room
+        socket.emit("leave_room", { user: user.nickname, room });
+        // clean
+        socket.off("user_joined_confirmed");
+        socket.off("recieve_message");
+        socket.off("update_user_list");
+      };
     }
   }, [user]);
-
-  // handle for recieved message
-  useEffect(() => {
-    socket.on("recieve_message", (msg) => {
-      setChat((prev) => [...prev, msg]);
-    });
-    return () => {
-      socket.off("recieve_message");
-    };
-  }, []);
 
   if (loading) {
     return <div>loading</div>;
   }
+
+  const handleDisplayOnlineUserBar = () => {
+    setDisplayOnlineUserBar(!displayOnlineUserBar);
+  };
+
   return (
     <>
       {user ? (
-        <>
-          <canvas className="rounded border border-blue-500 w-[500px]"></canvas>
-          <Chat chat={chat} user={user.nickname} />
-          <Inputs
-            setChat={setChat}
-            user={user.nickname}
-            socket={socket}
-            roomName={room}
-          />
+        <div className="flex min-h-screen">
+          <div className="flex-1">
+            <div className="flex justify-between items-center p-4">
+              <h2 className="font-bold">
+                {room} ({onlineUsers.length})
+              </h2>
 
-          <div>{user.nickname}</div>
-        </>
+              <button
+                className="rounded text-2xl p-2 md:hidden"
+                onClick={handleDisplayOnlineUserBar}
+              >
+                ☰
+              </button>
+            </div>
+            <div className="flex">
+              <div className="flex-1">
+                <Chat chat={chat} user={user.nickname} />
+                <Inputs
+                  setChat={setChat}
+                  user={user.nickname}
+                  socket={socket}
+                  roomName={room}
+                />
+              </div>
+              <UserList
+                user={user}
+                onlineUsers={onlineUsers}
+                displayOnlineUserBar={displayOnlineUserBar}
+              />
+            </div>
+          </div>
+        </div>
       ) : (
         <>
           <div>not logged in</div>

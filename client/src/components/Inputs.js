@@ -24,16 +24,23 @@ export default function Inputs({ user, socket, setChat, roomName }) {
 
   return (
     <>
-      <div>
-        <input
-          className="text-black"
-          type="text"
-          placeholder="enter your message"
-          value={input}
-          onChange={(e) => userTyping(e)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button onClick={sendMessage}>Send</button>
+      <div className="rounded bg-[#09133b] py-5 pl-3">
+        <div className="flex w-full">
+          <input
+            className="text-black flex-grow rounded p-1"
+            type="text"
+            placeholder="Enter your message"
+            value={input}
+            onChange={(e) => userTyping(e)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          />
+          <button
+            onClick={sendMessage}
+            className="w-1/13 min-w-[60px] rounded bg-blue-500 p-2 mx-3 hover:bg-blue-300"
+          >
+            Send
+          </button>
+        </div>
       </div>
     </>
   );
